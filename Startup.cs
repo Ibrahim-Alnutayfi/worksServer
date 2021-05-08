@@ -95,8 +95,8 @@ namespace worksServer
                .AddGoogle(config =>
                {
                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
-                   config.ClientId = "220493798552-le60n9p56921d83usuvchdbk7jmgoqru.apps.googleusercontent.com";
-                   config.ClientSecret = "FKNmSeW2WcOvCSSS92WwpENn";
+                   options.ClientId = "xxxxxxx";
+                   options.ClientSecret = "xxxxxxx";
                });
                
                
