@@ -37,29 +37,46 @@ namespace worksServer
 
         public void ConfigureServices(IServiceCollection services){
 
-           
+            services.AddControllers();
+            services.AddControllersWithViews();
+            services.AddAuthorization();
 
+
+            services.AddIdentity<IdentityUser, IdentityRole>(config => {
+
+                config.Password.RequireDigit = false;
+                config.Password.RequireLowercase = false;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequiredLength = 4;
+                config.User.AllowedUserNameCharacters = "_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ";
+                config.User.RequireUniqueEmail = true;
+            })
+               .AddEntityFrameworkStores<AuthDbContext>();
 
 
             services.Configure<ApplicationSettings>(Configuration.GetSection("ApplicationSettings"));
-
             string mySqlConnection = Configuration.GetConnectionString("DevelopmentLocalConnection");
-            services.AddDbContext<AuthDbContext>(options =>
-            options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
+            services.AddDbContext<AuthDbContext>(options => {
 
-            services.AddControllers();
+                options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection));
+            });
 
-            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"].ToString());
-            services.AddAuthentication(x => {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"]);
+            services.AddAuthentication(config =>
+            {
+
+                config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(x => {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = false;
-                    // how to validete token once received from client-side
-                    x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                .AddJwtBearer(config =>
+                {
+
+                    config.RequireHttpsMetadata = false;
+                    config.SaveToken = false;
+                    config.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
 
                         ValidateIssuerSigningKey = true,
@@ -69,56 +86,37 @@ namespace worksServer
                         ClockSkew = TimeSpan.Zero
                     };
                 })
-               .AddCookie( options =>
+
+               .AddCookie(config =>
                {
-                   options.LoginPath = "/auth/google-login";
+                   config.LoginPath = "/auth/google-login";
                })
-               .AddGoogle(options =>
+
+               .AddGoogle(config =>
                {
                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
-                   options.ClientId = "220493798552-le60n9p56921d83usuvchdbk7jmgoqru.apps.googleusercontent.com";
-                   options.ClientSecret = "FKNmSeW2WcOvCSSS92WwpENn";
+                   config.ClientId = "220493798552-le60n9p56921d83usuvchdbk7jmgoqru.apps.googleusercontent.com";
+                   config.ClientSecret = "FKNmSeW2WcOvCSSS92WwpENn";
                });
-
-
-
-
-
-
-
-
-            services.AddControllersWithViews();
-            services.AddAuthorization();
-
-            services.AddIdentity<IdentityUser, IdentityRole>(config =>
-            {
-                config.Password.RequireDigit = false;
-                config.Password.RequireLowercase = false;
-                config.Password.RequireNonAlphanumeric = false;
-                config.Password.RequireUppercase = false;
-                config.Password.RequiredLength = 4;
-            })
-               .AddEntityFrameworkStores<AuthDbContext>();
+               
+               
 
         }
 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
+            else{
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseCors(config =>
-            {
+
+            app.UseCors(config => {
+
                 config.AllowAnyOrigin();
-                config.WithOrigins(Configuration["ApplicationSettings:Client_URL"].ToString());
                 config.AllowAnyHeader();
                 config.AllowAnyMethod();
             });
@@ -133,8 +131,7 @@ namespace worksServer
             app.UseAuthorization();
 
 
-            app.UseEndpoints(endpoints =>{
-                /*endpoints.MapControllers();*/
+            app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

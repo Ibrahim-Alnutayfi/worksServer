@@ -61,3 +61,7 @@ C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Microsoft.AspNetCore.Aut
 C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\System.Net.Http.Formatting.dll
 C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\System.Web.Http.dll
 C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.Auth.PlatformServices.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.Auth.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.Core.dll

@@ -10,13 +10,26 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
-
+using Google.Apis.Auth;
+using Microsoft.AspNetCore.Identity;
+using worksServer.Models.Auth;
+using worksServer.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace worksServer.Controllers
 {
     [AllowAnonymous, Microsoft.AspNetCore.Mvc.Route("ExternalAuth")]
     public class ExternalAuthController : Controller
     {
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public ExternalAuthController(UserManager<IdentityUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
 
         [Microsoft.AspNetCore.Mvc.Route("google-login")]
         public IActionResult GoogleLogin()
@@ -26,20 +39,80 @@ namespace worksServer.Controllers
         }
 
 
+
         [Microsoft.AspNetCore.Mvc.Route("google-response")]
         public async Task<IActionResult> GoogleResponse(HttpActionContext actionContext)
-        {   
+        {
             var result = await HttpContext.AuthenticateAsync("Google");
-
             var claims = result.Principal.Identities.FirstOrDefault()
-                .Claims.Select(claim => new {
+                .Claims.Select(claim => new
+                {
                     claim.Issuer,
                     claim.OriginalIssuer,
                     claim.Type,
                     claim.Value
-                });
+                }).ToList();
 
-            return Json(claims);
+            string Issuer = claims[0].Issuer;
+            string id = claims[0].Value;
+            string name = claims[1].Value;
+            string email = claims[4].Value;
+            string firstName = name.Substring(0, name.IndexOf(" "));
+            string lastName = name.Substring(name.IndexOf(" ") + 1);
+
+
+            User user = await GetOrCreateExternalLoginUser(Issuer, id, firstName, lastName, email);
+            if (user == null)
+                return Json(new { Succeeded = false });
+            else{
+                string token = await GenerateToken(user);
+                return new JsonResult(token);
+            }
+        }
+
+
+
+        public async Task<string> GenerateToken(User user)
+        {
+            var claims = await _userManager.GetClaimsAsync(user);
+            var tokenDescriptor = new SecurityTokenDescriptor{
+                Subject = new ClaimsIdentity(new[] {
+                        new Claim("UserID", user.Id.ToString())
+                    }),
+                Expires = DateTime.UtcNow.AddMinutes(5),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456")), SecurityAlgorithms.HmacSha512Signature)
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.WriteToken(securityToken);
+            return token;
+        }
+
+
+
+        public async Task<User> GetOrCreateExternalLoginUser(string provider, string key, string firstName, string lastName, string email)
+        {
+            lastName = lastName.First().ToString().ToUpper() + lastName.Substring(1);
+            IdentityUser user = await _userManager.FindByLoginAsync(provider, key);
+            if (user != null)
+                return (User)user;
+            user = await _userManager.FindByEmailAsync(email);
+            if (user == null) {
+                user = new User {
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    UserName = firstName + lastName
+                };
+                await _userManager.CreateAsync(user);
+            }
+            var info = new UserLoginInfo(provider, key, provider.ToUpperInvariant());
+            var result = await _userManager.AddLoginAsync(user, info);
+            if (result.Succeeded)
+                return (User)user;
+
+            return null;
         }
 
     }
