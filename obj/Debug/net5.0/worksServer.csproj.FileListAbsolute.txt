@@ -65,3 +65,7 @@ C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.dll
 C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.Auth.PlatformServices.dll
 C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.Auth.dll
 C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\Google.Apis.Core.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\MimeKit.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\BouncyCastle.Crypto.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\MailKit.dll
+C:\Users\Microsoft\Desktop\worksServer\bin\Debug\net5.0\NETCore.MailKit.dll

@@ -71,7 +71,6 @@ namespace worksServer.Controllers
         }
 
 
-
         public async Task<string> GenerateToken(User user)
         {
             var claims = await _userManager.GetClaimsAsync(user);

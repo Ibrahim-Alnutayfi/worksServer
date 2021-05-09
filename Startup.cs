@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 
+
 namespace worksServer
 {
     public class Startup
@@ -42,7 +43,8 @@ namespace worksServer
             services.AddAuthorization();
 
 
-            services.AddIdentity<IdentityUser, IdentityRole>(config => {
+            services.AddIdentity<IdentityUser, IdentityRole>(config =>
+            {
 
                 config.Password.RequireDigit = false;
                 config.Password.RequireLowercase = false;
@@ -51,8 +53,10 @@ namespace worksServer
                 config.Password.RequiredLength = 4;
                 config.User.AllowedUserNameCharacters = "_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ";
                 config.User.RequireUniqueEmail = true;
+                config.SignIn.RequireConfirmedEmail = true;
             })
-               .AddEntityFrameworkStores<AuthDbContext>();
+               .AddEntityFrameworkStores<AuthDbContext>()
+               .AddDefaultTokenProviders();
 
 
             services.Configure<ApplicationSettings>(Configuration.GetSection("ApplicationSettings"));
@@ -66,19 +70,16 @@ namespace worksServer
             var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"]);
             services.AddAuthentication(config =>
             {
-
                 config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
                 .AddJwtBearer(config =>
                 {
-
                     config.RequireHttpsMetadata = false;
                     config.SaveToken = false;
                     config.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
-
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(key),
                         ValidateIssuer = false,
@@ -95,11 +96,9 @@ namespace worksServer
                .AddGoogle(config =>
                {
                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
-                   options.ClientId = "xxxxxxx";
-                   options.ClientSecret = "xxxxxxx";
+                   config.ClientId = Configuration["GoogleAuthSettings:ClientId"];
+                   config.ClientSecret = Configuration["GoogleAuthSettings:ClientSecret"];
                });
-               
-               
 
         }
 
@@ -139,9 +138,3 @@ namespace worksServer
         }
     }
 }
-
-
-
-
-
-/**/
