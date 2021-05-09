@@ -1,29 +1,17 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+﻿using worksServer.Models.AppConfigrations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Owin.Security.OAuth;
-using MimeKit;
-using MimeKit.Text;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
 using worksServer.Models;
-using worksServer.Models.AppConfigrations;
-
+using System.Net.Mail;
+using System.Linq;
+using System.Text;
+using System;
 
 
 namespace worksServer.Controllers {

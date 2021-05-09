@@ -1,22 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+﻿using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using System.Web.Http.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using Google.Apis.Auth;
-using Microsoft.AspNetCore.Identity;
-using worksServer.Models.Auth;
 using worksServer.Models;
-using Microsoft.IdentityModel.Tokens;
+using System.Web.Http;
+using System.Linq;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
+using System;
 
 namespace worksServer.Controllers
 {
